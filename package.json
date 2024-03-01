@@ -1,0 +1,26 @@
+{
+  "name": "car-derby-api",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": "20.x.x"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node src/index.js",
+    "deploy": "gcloud app deploy",
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "^6.0.0",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.13.0",
+    "prettier": "^2.5.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.0.0",
+    "wait-port": "^1.0.0"
+  }
+}
