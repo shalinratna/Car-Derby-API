@@ -23,3 +23,14 @@ export type PlayerData = {
   vehicles: PlayerVehicle[];
   settings: PlayerSettings;
 };
+
+export type PlayerVehicleUpdate = {
+  resaleValue?: number;
+  paintIndex?: number;
+};
+
+export type PlayerSettingsUpdate = {
+  soundOn?: boolean;
+  musicOn?: boolean;
+  removeAds?: boolean;
+};

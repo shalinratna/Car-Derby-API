@@ -1,4 +1,10 @@
-import { Player, PlayerSettings, PlayerVehicle } from '../../types/players.types';
+import {
+  Player,
+  PlayerSettings,
+  PlayerVehicle,
+  PlayerVehicleUpdate,
+  PlayerSettingsUpdate,
+} from '../../types/players.types';
 
 const players: { [key: string]: Player } = {
   one: { id: 'one', name: 'Shalin' },
@@ -48,6 +54,19 @@ class PlayersService {
       vehicles: playerVehicles,
       settings: playerSettings,
     };
+  };
+
+  updatePlayerVehicle = (id: string, vehicleId: string, update: PlayerVehicleUpdate) => {
+    // check player exists
+    // check vehicle exists and belongs to player
+    // update vehicle
+    // return updated vehicle
+  };
+
+  updatePlayerSettings = (id: string, update: PlayerSettingsUpdate) => {
+    // check player exists
+    // update settings
+    // return updated settings
   };
 }
 
