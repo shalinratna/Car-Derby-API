@@ -1,16 +1,18 @@
 import express, { Express, Request, Response } from 'express';
+import PlayersService from './services/players/players.service';
 
 const PORT = process.env.PORT || 8080;
 const app: Express = express();
+const playersService = new PlayersService();
 
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: '🎉 Hello from TypeScript! 🎉' });
 });
 
-app.get('/users/:userId/games/:gameId', (req: Request, res: Response) => {
-  const userId = req.params.userId;
-  const gameId = req.params.gameId;
-  res.json({ userId, gameId });
+app.get('/players/:playerId/vehicles/', (req: Request, res: Response) => {
+  const playerId = req.params.playerId;
+  const vehicles = playersService.getPlayerVehicles(playerId);
+  res.json({ vehicles });
 });
 
 app.listen(PORT, () => {
