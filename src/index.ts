@@ -9,10 +9,10 @@ app.get('/', (req: Request, res: Response) => {
   res.json({ message: '🎉 Hello from TypeScript! 🎉' });
 });
 
-app.get('/players/:playerId/vehicles/', (req: Request, res: Response) => {
+app.get('/players/:playerId', (req: Request, res: Response) => {
   const playerId = req.params.playerId;
-  const vehicles = playersService.getPlayerVehicles(playerId);
-  res.json({ vehicles });
+  const data = playersService.getPlayerData(playerId);
+  res.json({ data });
 });
 
 app.listen(PORT, () => {
