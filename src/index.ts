@@ -5,8 +5,9 @@ const PORT = process.env.PORT || 8080;
 const app: Express = express();
 const playersService = new PlayersService();
 
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: '🎉 Hello from TypeScript! 🎉' });
+app.get('/players', async (req: Request, res: Response) => {
+  const allPlayers = await playersService.getAllPlayers();
+  res.json({ allPlayers });
 });
 
 app.get('/players/:playerId', (req: Request, res: Response) => {

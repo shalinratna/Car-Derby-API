@@ -6,6 +6,9 @@ import {
   PlayerSettingsUpdate,
 } from '../../types/players.types';
 
+import { database } from '../../clients/firebase.client';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+
 const players: { [key: string]: Player } = {
   one: { id: 'one', name: 'Shalin' },
   two: { id: 'two', name: 'Kevin' },
@@ -29,6 +32,14 @@ class PlayersService {
       throw new Error(`Player with id ${id} does not exist`);
     }
     return playerMaybe;
+  };
+
+  getAllPlayers = async () => {
+    const playersCollectionRef = collection(database, 'players');
+    const snapshot = await getDocs(playersCollectionRef);
+    const playersList = snapshot.docs.map((doc) => doc.data());
+
+    return playersList;
   };
 
   getPlayerVehicles = (id: string) => {
