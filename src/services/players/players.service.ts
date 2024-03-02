@@ -1,4 +1,3 @@
-import { unescape } from 'querystring';
 import {
   Player,
   PlayerSettings,
@@ -44,9 +43,9 @@ class PlayersService {
   // There should be no duplicates
   getPlayerSettings = (id: string) => {
     const player = this.getPlayer(id);
-    const playerSettings: PlayerSettings = settings.find(
+    const playerSettings: PlayerSettings | undefined = settings.find(
       (setting) => setting.playerId === player.id,
-    ) as PlayerSettings;
+    );
     return playerSettings;
   };
 
@@ -83,7 +82,7 @@ class PlayersService {
     const player = this.getPlayer(id);
     let playerSettings = this.getPlayerSettings(id);
 
-    if (playerSettings !== null) {
+    if (playerSettings !== undefined) {
       if (update.musicOn !== undefined) {
         playerSettings.musicOn = update.musicOn;
       }
