@@ -1,3 +1,4 @@
+import { unescape } from 'querystring';
 import {
   Player,
   PlayerSettings,
@@ -39,9 +40,13 @@ class PlayersService {
     return playerVehicles;
   };
 
+  // This will only return 1 instance of PlayerSettings that matches the player
+  // There should be no duplicates
   getPlayerSettings = (id: string) => {
     const player = this.getPlayer(id);
-    const playerSettings = settings.filter((setting) => setting.playerId === player.id);
+    const playerSettings: PlayerSettings = settings.find(
+      (setting) => setting.playerId === player.id,
+    ) as PlayerSettings;
     return playerSettings;
   };
 
@@ -57,16 +62,40 @@ class PlayersService {
   };
 
   updatePlayerVehicle = (id: string, vehicleId: string, update: PlayerVehicleUpdate) => {
-    // check player exists
-    // check vehicle exists and belongs to player
-    // update vehicle
-    // return updated vehicle
+    const player = this.getPlayer(id);
+    let playerVehicle: PlayerVehicle = vehicles.find(
+      (vehicle) => vehicle.id === vehicleId && vehicle.playerId === player.id,
+    ) as PlayerVehicle;
+
+    if (playerVehicle) {
+      if (update.paintIndex !== undefined) {
+        playerVehicle.paintIndex = update.paintIndex;
+      }
+      if (update.resaleValue !== undefined) {
+        playerVehicle.resaleValue = update.resaleValue;
+      }
+    }
+
+    return playerVehicle;
   };
 
   updatePlayerSettings = (id: string, update: PlayerSettingsUpdate) => {
-    // check player exists
-    // update settings
-    // return updated settings
+    const player = this.getPlayer(id);
+    let playerSettings = this.getPlayerSettings(id);
+
+    if (playerSettings !== null) {
+      if (update.musicOn !== undefined) {
+        playerSettings.musicOn = update.musicOn;
+      }
+      if (update.soundOn !== undefined) {
+        playerSettings.soundOn = update.soundOn;
+      }
+      if (update.removeAds !== undefined) {
+        playerSettings.removeAds = update.removeAds;
+      }
+    }
+
+    return playerSettings;
   };
 }
 
