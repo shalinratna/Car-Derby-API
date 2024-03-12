@@ -15,5 +15,3 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const database = getFirestore(app);
-
-console.log(`API Key ${process.env.API_KEY}`);

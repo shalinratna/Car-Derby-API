@@ -7,12 +7,16 @@ import {
 } from '../../types/players.types';
 
 import { database } from '../../clients/firebase.client';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
-
-const players: { [key: string]: Player } = {
-  one: { id: 'one', name: 'Shalin' },
-  two: { id: 'two', name: 'Kevin' },
-};
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  query,
+  where,
+  limit,
+  addDoc,
+} from 'firebase/firestore';
 
 const vehicles: PlayerVehicle[] = [
   { id: 'v1', name: 'Merope', playerId: 'one', resaleValue: 15000, paintIndex: 0 },
@@ -20,92 +24,98 @@ const vehicles: PlayerVehicle[] = [
   { id: 'v3', name: 'Vesta', playerId: 'two', resaleValue: 10000, paintIndex: 3 },
 ];
 
-const settings: PlayerSettings[] = [
-  { playerId: 'one', soundOn: true, musicOn: true, removeAds: false },
-  { playerId: 'two', soundOn: true, musicOn: true, removeAds: true },
-];
+// shalin: nchskFoPBYcvKzIz2JpI
+// kevin: zPnsbd1TWu0CraQZlCDO
 
 class PlayersService {
-  getPlayer = (id: string) => {
-    const playerMaybe = players[id];
-    if (!playerMaybe) {
-      throw new Error(`Player with id ${id} does not exist`);
-    }
-    return playerMaybe;
-  };
-
   getAllPlayers = async () => {
-    const playersCollectionRef = collection(database, 'players');
-    const snapshot = await getDocs(playersCollectionRef);
+    const ref = collection(database, 'players');
+    const snapshot = await getDocs(ref);
     const playersList = snapshot.docs.map((doc) => doc.data());
 
     return playersList;
   };
 
-  getPlayerVehicles = (id: string) => {
-    const player = this.getPlayer(id);
-    // find all of the vehicles that belong to the player
-    const playerVehicles = vehicles.filter((vehicle) => vehicle.playerId === player.id);
-    // return all the player's vehicles
-    return playerVehicles;
+  getPlayer = async (id: string) => {
+    const ref = doc(database, 'players', id);
+    const snapshot = await getDoc(ref);
+
+    if (!snapshot.exists()) {
+      throw new Error(`Player with id ${id} does not exist`);
+    }
+
+    return snapshot.data();
   };
 
-  // This will only return 1 instance of PlayerSettings that matches the player
-  // There should be no duplicates
-  getPlayerSettings = (id: string) => {
-    const player = this.getPlayer(id);
-    const playerSettings: PlayerSettings | undefined = settings.find(
-      (setting) => setting.playerId === player.id,
-    );
-    return playerSettings;
+  createPlayer = async (player: Omit<Player, 'id'>) => {
+    const ref = collection(database, 'players');
+    const newPlayer = await addDoc(ref, player);
+    return {
+      id: newPlayer.id,
+      ...player,
+    };
+  };
+
+  getPlayerSettings = async (id: string) => {
+    const ref = collection(database, 'playerSettings');
+    const settingsQuery = query(ref, where('playerId', '==', id), limit(1));
+    const snapshot = await getDocs(settingsQuery);
+
+    if (snapshot.empty) {
+      throw new Error(`Player settings for player with id "${id}" does not exist`);
+    }
+    const settings = snapshot.docs[0].data() as PlayerSettings;
+    return settings;
+  };
+
+  getPlayerVehicles = (id: string) => {
+    // const player = this.getPlayer(id);
+    // const playerVehicles = vehicles.filter((vehicle) => vehicle.playerId === player.id);
+    // return playerVehicles;
   };
 
   getPlayerData = (id: string) => {
     const player = this.getPlayer(id);
-    const playerVehicles = this.getPlayerVehicles(id);
+    // const playerVehicles = this.getPlayerVehicles(id);
     const playerSettings = this.getPlayerSettings(id);
     return {
       player,
-      vehicles: playerVehicles,
+      // vehicles: playerVehicles,
       settings: playerSettings,
     };
   };
 
   updatePlayerVehicle = (id: string, vehicleId: string, update: PlayerVehicleUpdate) => {
-    const player = this.getPlayer(id);
-    let playerVehicle: PlayerVehicle = vehicles.find(
-      (vehicle) => vehicle.id === vehicleId && vehicle.playerId === player.id,
-    ) as PlayerVehicle;
-
-    if (playerVehicle) {
-      if (update.paintIndex !== undefined) {
-        playerVehicle.paintIndex = update.paintIndex;
-      }
-      if (update.resaleValue !== undefined) {
-        playerVehicle.resaleValue = update.resaleValue;
-      }
-    }
-
-    return playerVehicle;
+    // const player = this.getPlayer(id);
+    // let playerVehicle: PlayerVehicle = vehicles.find(
+    //   (vehicle) => vehicle.id === vehicleId && vehicle.playerId === player.id,
+    // ) as PlayerVehicle;
+    // if (playerVehicle) {
+    //   if (update.paintIndex !== undefined) {
+    //     playerVehicle.paintIndex = update.paintIndex;
+    //   }
+    //   if (update.resaleValue !== undefined) {
+    //     playerVehicle.resaleValue = update.resaleValue;
+    //   }
+    // }
+    // return playerVehicle;
   };
 
   updatePlayerSettings = (id: string, update: PlayerSettingsUpdate) => {
-    const player = this.getPlayer(id);
-    let playerSettings = this.getPlayerSettings(id);
-
-    if (playerSettings !== undefined) {
-      if (update.musicOn !== undefined) {
-        playerSettings.musicOn = update.musicOn;
-      }
-      if (update.soundOn !== undefined) {
-        playerSettings.soundOn = update.soundOn;
-      }
-      if (update.removeAds !== undefined) {
-        playerSettings.removeAds = update.removeAds;
-      }
-    }
-
-    return playerSettings;
+    // const player = this.getPlayer(id);
+    // let playerSettings = this.getPlayerSettings(id);
+    // if (playerSettings !== undefined) {
+    //   if (update.musicOn !== undefined) {
+    //     playerSettings.musicOn = update.musicOn;
+    //   }
+    //   if (update.soundOn !== undefined) {
+    //     playerSettings.soundOn = update.soundOn;
+    //   }
+    //   if (update.removeAds !== undefined) {
+    //     playerSettings.removeAds = update.removeAds;
+    //   }
+    // }
+    // return playerSettings;
   };
 }
 
