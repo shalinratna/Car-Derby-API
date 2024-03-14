@@ -1,12 +1,12 @@
 import { PlayerCreate, PlayerUpdate } from '../types/players.types';
-import { isDefined, isBoolean, isString, isValidateEmail } from './validation.utils';
+import { isDefined, isBoolean, isString, isValidEmail } from './validation.utils';
 
 export function validatePlayerCreate(player: PlayerCreate) {
   if (!isString(player.name)) {
     throw new Error('Player name is missing');
   }
 
-  if (!isValidateEmail(player.email)) {
+  if (!isValidEmail(player.email)) {
     throw new Error('Player email is missing or invalid');
   }
 
@@ -30,7 +30,7 @@ export function validatePlayerUpdate(player: PlayerUpdate) {
     throw new Error('Player name is missing');
   }
 
-  if (isDefined(player.email) && !isValidateEmail(player.email)) {
+  if (isDefined(player.email) && !isValidEmail(player.email)) {
     throw new Error('Player email is missing or invalid');
   }
 

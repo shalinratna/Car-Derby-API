@@ -10,7 +10,7 @@ export function isString(value: any) {
   return typeof value === 'string';
 }
 
-export function isValidateEmail(email: any) {
+export function isValidEmail(email: any) {
   if (!isString(email)) return false;
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
