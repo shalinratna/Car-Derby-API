@@ -1,10 +1,11 @@
 import {
   Player,
   PlayerSettings,
-  PlayerVehicle,
   PlayerVehicleUpdate,
   PlayerSettingsUpdate,
 } from '../../types/players.types';
+
+import { VehiclesService } from '../vehicles/vehicles.service';
 
 import { database } from '../../clients/firebase.client';
 import {
@@ -17,12 +18,6 @@ import {
   limit,
   addDoc,
 } from 'firebase/firestore';
-
-const vehicles: PlayerVehicle[] = [
-  { id: 'v1', name: 'Merope', playerId: 'one', resaleValue: 15000, paintIndex: 0 },
-  { id: 'v2', name: 'Gliese-393', playerId: 'one', resaleValue: 12000, paintIndex: 2 },
-  { id: 'v3', name: 'Vesta', playerId: 'two', resaleValue: 10000, paintIndex: 3 },
-];
 
 // shalin: nchskFoPBYcvKzIz2JpI
 // kevin: zPnsbd1TWu0CraQZlCDO
@@ -68,10 +63,9 @@ class PlayersService {
     return settings;
   };
 
-  getPlayerVehicles = (id: string) => {
-    // const player = this.getPlayer(id);
-    // const playerVehicles = vehicles.filter((vehicle) => vehicle.playerId === player.id);
-    // return playerVehicles;
+  getPlayerVehicles = async (id: string) => {
+    const vehiclesService = new VehiclesService();
+    return vehiclesService.getPlayerVehicles(id);
   };
 
   getPlayerData = (id: string) => {
@@ -86,6 +80,9 @@ class PlayersService {
   };
 
   updatePlayerVehicle = (id: string, vehicleId: string, update: PlayerVehicleUpdate) => {
+    const vehiclesService = new VehiclesService();
+
+    vehiclesService.updatePlayerVehicle(id, vehicleId, update);
     // const player = this.getPlayer(id);
     // let playerVehicle: PlayerVehicle = vehicles.find(
     //   (vehicle) => vehicle.id === vehicleId && vehicle.playerId === player.id,

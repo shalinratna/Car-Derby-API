@@ -1,16 +1,18 @@
+import { Vehicle } from './vehicles.types';
+
 export type Player = {
   id: string;
   name: string;
   email: string;
 };
 
-export type PlayerVehicle = {
-  id: string;
-  playerId: string;
-  name: string;
-  resaleValue: number;
-  paintIndex: number;
-};
+// export type PlayerVehicle = {
+//   id: string;
+//   playerId: string;
+//   name: string;
+//   resaleValue: number;
+//   paintIndex: number;
+// };
 
 export type PlayerSettings = {
   playerId: string;
@@ -21,7 +23,7 @@ export type PlayerSettings = {
 
 export type PlayerData = {
   player: Player;
-  vehicles: PlayerVehicle[];
+  vehicles: Vehicle[];
   settings: PlayerSettings;
 };
 
