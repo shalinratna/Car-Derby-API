@@ -38,13 +38,31 @@ const vehicles: Vehicle[] = [
 ];
 
 export class VehiclesService {
-  // May not function properly
-  getAllAvailableVehicles = async () => {
-    const ref = collection(database, 'allVehicles');
+  getAllVehicles = async () => {
+    const ref = collection(database, 'vehicles');
     const snapshot = await getDocs(ref);
-    const vehiclesList = snapshot.docs.map((doc) => doc.data());
+    const vehiclesList = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Vehicle[];
 
     return vehiclesList;
+  };
+
+  getVehicle = async (id: string) => {
+    const ref = doc(database, 'vehicles', id);
+    const snapshot = await getDoc(ref);
+
+    if (!snapshot.exists()) {
+      throw new Error(`Vehicle with id ${id} does not exist`);
+    }
+
+    const vehicle = {
+      id: snapshot.id,
+      ...snapshot.data(),
+    } as Vehicle;
+
+    return vehicle;
   };
 
   createPlayerVehicles = async (playerId: string, vehicles: Vehicle[]) => {

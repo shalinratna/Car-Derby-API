@@ -1,9 +1,4 @@
-import {
-  Player,
-  PlayerUpdate,
-  PlayerVehicleUpdate,
-  PlayerCreate,
-} from '../../types/players.types';
+import { Player, PlayerUpdate, PlayerCreate } from '../../types/players.types';
 
 import { VehiclesService } from '../vehicles/vehicles.service';
 
@@ -71,24 +66,31 @@ class PlayersService {
     return vehiclesService.getPlayerVehicles(id);
   };
 
-  updatePlayerVehicle = (id: string, vehicleId: string, update: PlayerVehicleUpdate) => {
+  addVehicleToPlayer = async (playerId: string, vehicleId: string) => {
     const vehiclesService = new VehiclesService();
-
-    vehiclesService.updatePlayerVehicle(id, vehicleId, update);
-    // const player = this.getPlayer(id);
-    // let playerVehicle: PlayerVehicle = vehicles.find(
-    //   (vehicle) => vehicle.id === vehicleId && vehicle.playerId === player.id,
-    // ) as PlayerVehicle;
-    // if (playerVehicle) {
-    //   if (update.paintIndex !== undefined) {
-    //     playerVehicle.paintIndex = update.paintIndex;
-    //   }
-    //   if (update.resaleValue !== undefined) {
-    //     playerVehicle.resaleValue = update.resaleValue;
-    //   }
-    // }
-    // return playerVehicle;
+    const vehicle = await vehiclesService.getVehicle(vehicleId);
+    const player = await this.getPlayer(playerId);
+    player.vehicles = player.vehicles || [];
   };
+
+  // updatePlayerVehicle = (id: string, vehicleId: string, update: PlayerVehicleUpdate) => {
+  //   const vehiclesService = new VehiclesService();
+
+  //   vehiclesService.updatePlayerVehicle(id, vehicleId, update);
+  //   // const player = this.getPlayer(id);
+  //   // let playerVehicle: PlayerVehicle = vehicles.find(
+  //   //   (vehicle) => vehicle.id === vehicleId && vehicle.playerId === player.id,
+  //   // ) as PlayerVehicle;
+  //   // if (playerVehicle) {
+  //   //   if (update.paintIndex !== undefined) {
+  //   //     playerVehicle.paintIndex = update.paintIndex;
+  //   //   }
+  //   //   if (update.resaleValue !== undefined) {
+  //   //     playerVehicle.resaleValue = update.resaleValue;
+  //   //   }
+  //   // }
+  //   // return playerVehicle;
+  // };
 
   deletePlayer = async (id: string) => {
     const ref = doc(database, 'players', id);
