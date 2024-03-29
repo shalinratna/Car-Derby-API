@@ -1,8 +1,8 @@
 import {
   Player,
-  PlayerSettings,
+  PlayerUpdate,
   PlayerVehicleUpdate,
-  PlayerSettingsUpdate,
+  PlayerCreate,
 } from '../../types/players.types';
 
 import { VehiclesService } from '../vehicles/vehicles.service';
@@ -13,10 +13,9 @@ import {
   getDocs,
   doc,
   getDoc,
-  query,
-  where,
-  limit,
   addDoc,
+  updateDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 
 // shalin: nchskFoPBYcvKzIz2JpI
@@ -26,9 +25,22 @@ class PlayersService {
   getAllPlayers = async () => {
     const ref = collection(database, 'players');
     const snapshot = await getDocs(ref);
-    const playersList = snapshot.docs.map((doc) => doc.data());
+    const playersList = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as Player[];
 
     return playersList;
+  };
+
+  createPlayer = async (playerCreate: PlayerCreate) => {
+    const ref = collection(database, 'players');
+    const newPlayer = await addDoc(ref, playerCreate);
+    const player = {
+      id: newPlayer.id,
+      ...playerCreate,
+    } as Player;
+    return player;
   };
 
   getPlayer = async (id: string) => {
@@ -39,44 +51,24 @@ class PlayersService {
       throw new Error(`Player with id ${id} does not exist`);
     }
 
-    return snapshot.data();
+    const player = {
+      id: snapshot.id,
+      ...snapshot.data(),
+    } as Player;
+
+    return player;
   };
 
-  createPlayer = async (player: Omit<Player, 'id'>) => {
-    const ref = collection(database, 'players');
-    const newPlayer = await addDoc(ref, player);
-    return {
-      id: newPlayer.id,
-      ...player,
-    };
-  };
-
-  getPlayerSettings = async (id: string) => {
-    const ref = collection(database, 'playerSettings');
-    const settingsQuery = query(ref, where('playerId', '==', id), limit(1));
-    const snapshot = await getDocs(settingsQuery);
-
-    if (snapshot.empty) {
-      throw new Error(`Player settings for player with id "${id}" does not exist`);
-    }
-    const settings = snapshot.docs[0].data() as PlayerSettings;
-    return settings;
+  updatePlayer = async (id: string, playerUpdate: PlayerUpdate) => {
+    const ref = doc(database, 'players', id);
+    await updateDoc(ref, playerUpdate);
+    const player = await this.getPlayer(id);
+    return player;
   };
 
   getPlayerVehicles = async (id: string) => {
     const vehiclesService = new VehiclesService();
     return vehiclesService.getPlayerVehicles(id);
-  };
-
-  getPlayerData = (id: string) => {
-    const player = this.getPlayer(id);
-    // const playerVehicles = this.getPlayerVehicles(id);
-    const playerSettings = this.getPlayerSettings(id);
-    return {
-      player,
-      // vehicles: playerVehicles,
-      settings: playerSettings,
-    };
   };
 
   updatePlayerVehicle = (id: string, vehicleId: string, update: PlayerVehicleUpdate) => {
@@ -98,22 +90,34 @@ class PlayersService {
     // return playerVehicle;
   };
 
-  updatePlayerSettings = (id: string, update: PlayerSettingsUpdate) => {
-    // const player = this.getPlayer(id);
-    // let playerSettings = this.getPlayerSettings(id);
-    // if (playerSettings !== undefined) {
-    //   if (update.musicOn !== undefined) {
-    //     playerSettings.musicOn = update.musicOn;
-    //   }
-    //   if (update.soundOn !== undefined) {
-    //     playerSettings.soundOn = update.soundOn;
-    //   }
-    //   if (update.removeAds !== undefined) {
-    //     playerSettings.removeAds = update.removeAds;
-    //   }
-    // }
-    // return playerSettings;
+  deletePlayer = async (id: string) => {
+    const ref = doc(database, 'players', id);
+    await deleteDoc(ref);
+    return id;
   };
 }
 
 export default PlayersService;
+
+// TODO: clean up or re-use
+
+// getPlayerSettings = async (id: string) => {
+//   const ref = collection(database, 'playerSettings');
+//   const settingsQuery = query(ref, where('playerId', '==', id), limit(1));
+//   const snapshot = await getDocs(settingsQuery);
+
+//   if (snapshot.empty) {
+//     throw new Error(`Player settings for player with id "${id}" does not exist`);
+//   }
+//   const settings = snapshot.docs[0].data() as PlayerSettings;
+//   return settings;
+// };
+
+// const vehicles: PlayerVehicle[] = [
+//   { id: 'v1', name: 'Merope', playerId: 'one', resaleValue: 15000, paintIndex: 0 },
+//   { id: 'v2', name: 'Gliese-393', playerId: 'one', resaleValue: 12000, paintIndex: 2 },
+//   { id: 'v3', name: 'Vesta', playerId: 'two', resaleValue: 10000, paintIndex: 3 },
+// ];
+
+// shalin: tYOapjY1fESOY14DHAXg
+// kevin: pEj2iLikX8oLaMdrzv0q
