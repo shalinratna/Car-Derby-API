@@ -38,6 +38,15 @@ const vehicles: Vehicle[] = [
 ];
 
 export class VehiclesService {
+  // May not function properly
+  getAllAvailableVehicles = async () => {
+    const ref = collection(database, 'allVehicles');
+    const snapshot = await getDocs(ref);
+    const vehiclesList = snapshot.docs.map((doc) => doc.data());
+
+    return vehiclesList;
+  };
+
   createPlayerVehicles = async (playerId: string, vehicles: Vehicle[]) => {
     const ref = collection(database, 'vehicles');
     const batch = vehicles.map((vehicle) => {
@@ -47,6 +56,7 @@ export class VehiclesService {
     await Promise.all(batch);
   };
 
+  // May need work
   getPlayerVehicles = async (playerId: string) => {
     return vehicles.filter((vehicle) => vehicle.playerId === playerId);
   };
