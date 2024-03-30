@@ -8,14 +8,17 @@ export type Vehicle = {
   price: number;
 };
 
-export type PlayerVehicle = {
-  id: string;
+export type PlayerVehicle = Vehicle & {
   resaleValue: number;
   paintIndex: number;
 };
 
-export type ResolvedVehicle = Vehicle & PlayerVehicle;
+export type PlayerVehicleCreate = {
+  resaleValue: number;
+  paintIndex: number;
+};
 
-export interface IVehicleService {
-  getPlayerVehicles: (playerId: string) => Promise<Vehicle>;
-}
+export type PlayerVehicleUpdate = {
+  resaleValue?: number;
+  paintIndex?: number;
+};
