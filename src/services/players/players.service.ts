@@ -96,7 +96,9 @@ class PlayersService {
 
   removeVehicle = async (playerId: string, vehicleId: string) => {
     const player = await this.get(playerId);
-    player.vehicles = player.vehicles.filter((vehicle) => vehicle.id !== vehicleId);
+    player.vehicles = (player.vehicles || []).filter(
+      (vehicle) => vehicle.id !== vehicleId,
+    );
     await this.update(playerId, { vehicles: player.vehicles });
   };
 }
