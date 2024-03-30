@@ -28,7 +28,7 @@ Deploy to App Engine Flexible by [modifying `app.yaml`][app_yaml].
 
 - `index.ts`
   - Entry point for the application
-  - Instantiations all controllers which all take an app and a database instance
+  - Instantiations all controllers which all take an `app` and a `database` instance
 - `x.controller`
   - Creates an instance of the corresponding service
   - Mutates the `app` instance to bind all routes to service methods
