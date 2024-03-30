@@ -1,7 +1,14 @@
 import { PlayerCreate, PlayerUpdate } from '../types/players.types';
-import { isDefined, isBoolean, isString, isValidEmail } from './validation.utils';
+import { PlayerVehicleCreate } from '../types/vehicles.types';
+import {
+  isDefined,
+  isBoolean,
+  isString,
+  isValidEmail,
+  isNumber,
+} from './validation.utils';
 
-export function validatePlayerCreate(player: PlayerCreate) {
+export function validatePlayerCreate(player: any): PlayerCreate {
   if (!isString(player.name)) {
     throw new Error('Player name is missing');
   }
@@ -22,10 +29,10 @@ export function validatePlayerCreate(player: PlayerCreate) {
     throw new Error('Invalid removeAds setting');
   }
 
-  return player;
+  return player as PlayerCreate;
 }
 
-export function validatePlayerUpdate(player: PlayerUpdate) {
+export function validatePlayerUpdate(player: any): PlayerUpdate {
   if (isDefined(player.name) && !isString(player.name)) {
     throw new Error('Player name is missing');
   }
@@ -46,5 +53,17 @@ export function validatePlayerUpdate(player: PlayerUpdate) {
     throw new Error('Invalid removeAds setting');
   }
 
-  return player;
+  return player as PlayerUpdate;
+}
+
+export function validatePlayerVehicleCreate(playerVehicle: any): PlayerVehicleCreate {
+  if (!isNumber(playerVehicle.resaleValue)) {
+    throw new Error('Player vehicle resaleValue is missing or invalid');
+  }
+
+  if (!isNumber(playerVehicle.paintIndex)) {
+    throw new Error('Player vehicle paintIndex is missing or invalid');
+  }
+
+  return playerVehicle;
 }

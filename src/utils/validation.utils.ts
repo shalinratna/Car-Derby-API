@@ -15,3 +15,7 @@ export function isValidEmail(email: any) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 }
+
+export function isNumber(value: any) {
+  return typeof value === 'number';
+}

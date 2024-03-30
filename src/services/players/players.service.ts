@@ -1,6 +1,6 @@
-import { Player, PlayerCreate, PlayerUpdate } from '../../types/players.types';
-
-import { database } from '../../clients/firebase.client';
+import { VehiclesService } from '../vehicles/vehicles.service';
+import { Player, PlayerUpdate, PlayerCreate } from '../../types/players.types';
+import { PlayerVehicle, PlayerVehicleCreate } from '../../types/vehicles.types';
 import {
   collection,
   getDocs,
@@ -9,32 +9,41 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  Firestore,
 } from 'firebase/firestore';
 
 class PlayersService {
-  getAllPlayers = async () => {
-    const ref = collection(database, 'players');
+  db: Firestore;
+
+  constructor(db: Firestore) {
+    this.db = db;
+  }
+
+  getAll = async () => {
+    const ref = collection(this.db, 'players');
     const snapshot = await getDocs(ref);
-    const playersList = snapshot.docs.map((doc) => ({
+    const list = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     })) as Player[];
 
-    return playersList;
+    return list;
   };
 
-  createPlayer = async (playerCreate: PlayerCreate) => {
-    const ref = collection(database, 'players');
+  create = async (playerCreate: PlayerCreate) => {
+    const ref = collection(this.db, 'players');
     const newPlayer = await addDoc(ref, playerCreate);
+
     const player = {
       id: newPlayer.id,
       ...playerCreate,
     } as Player;
+
     return player;
   };
 
-  getPlayer = async (id: string) => {
-    const ref = doc(database, 'players', id);
+  get = async (id: string) => {
+    const ref = doc(this.db, 'players', id);
     const snapshot = await getDoc(ref);
 
     if (!snapshot.exists()) {
@@ -49,41 +58,47 @@ class PlayersService {
     return player;
   };
 
-  updatePlayer = async (id: string, playerUpdate: PlayerUpdate) => {
-    const ref = doc(database, 'players', id);
+  update = async (id: string, playerUpdate: PlayerUpdate) => {
+    const ref = doc(this.db, 'players', id);
     await updateDoc(ref, playerUpdate);
-    const player = await this.getPlayer(id);
+    const player = await this.get(id);
     return player;
   };
 
-  deletePlayer = async (id: string) => {
-    const ref = doc(database, 'players', id);
+  delete = async (id: string) => {
+    const ref = doc(this.db, 'players', id);
     await deleteDoc(ref);
     return id;
+  };
+
+  addVehicle = async (
+    playerId: string,
+    vehicleId: string,
+    playerVehicleCreate: PlayerVehicleCreate,
+  ) => {
+    const player = await this.get(playerId);
+    player.vehicles = player.vehicles || [];
+
+    const vehiclesService = new VehiclesService(this.db);
+    const vehicle = await vehiclesService.get(vehicleId);
+
+    const { resaleValue, paintIndex } = playerVehicleCreate;
+    const playerVehicle: PlayerVehicle = {
+      ...vehicle,
+      resaleValue,
+      paintIndex,
+    };
+
+    player.vehicles.push(playerVehicle);
+
+    await this.update(playerId, { vehicles: player.vehicles });
+  };
+
+  removeVehicle = async (playerId: string, vehicleId: string) => {
+    const player = await this.get(playerId);
+    player.vehicles = player.vehicles.filter((vehicle) => vehicle.id !== vehicleId);
+    await this.update(playerId, { vehicles: player.vehicles });
   };
 }
 
 export default PlayersService;
-
-// TODO: clean up or re-use
-
-// getPlayerSettings = async (id: string) => {
-//   const ref = collection(database, 'playerSettings');
-//   const settingsQuery = query(ref, where('playerId', '==', id), limit(1));
-//   const snapshot = await getDocs(settingsQuery);
-
-//   if (snapshot.empty) {
-//     throw new Error(`Player settings for player with id "${id}" does not exist`);
-//   }
-//   const settings = snapshot.docs[0].data() as PlayerSettings;
-//   return settings;
-// };
-
-// const vehicles: PlayerVehicle[] = [
-//   { id: 'v1', name: 'Merope', playerId: 'one', resaleValue: 15000, paintIndex: 0 },
-//   { id: 'v2', name: 'Gliese-393', playerId: 'one', resaleValue: 12000, paintIndex: 2 },
-//   { id: 'v3', name: 'Vesta', playerId: 'two', resaleValue: 10000, paintIndex: 3 },
-// ];
-
-// shalin: tYOapjY1fESOY14DHAXg
-// kevin: pEj2iLikX8oLaMdrzv0q
