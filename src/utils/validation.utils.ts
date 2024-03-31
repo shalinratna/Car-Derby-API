@@ -1,5 +1,3 @@
-import { Express, Request, Response } from 'express';
-
 export function isDefined(value: any) {
   return value !== undefined;
 }
