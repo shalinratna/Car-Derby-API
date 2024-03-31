@@ -65,7 +65,7 @@ class PlayersService {
     return player;
   };
 
-  delete = async (id: string) => {
+  remove = async (id: string) => {
     const ref = doc(this.db, 'players', id);
     await deleteDoc(ref);
     return id;

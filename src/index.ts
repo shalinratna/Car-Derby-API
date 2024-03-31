@@ -1,7 +1,8 @@
 import express, { Express } from 'express';
 import { db } from './clients/firebase.client';
-import playersController from './services/players/players.controller';
-import vehiclesController from './services/vehicles/vehicles.controller';
+import playersController from './domains/players/players.controller';
+import vehiclesController from './domains/vehicles/vehicles.controller';
+import { getAsciiLogo } from './utils/logging.utils';
 
 const port = process.env.PORT || 8080;
 const app: Express = express();
@@ -19,5 +20,6 @@ playersController(app, db);
 vehiclesController(app, db);
 
 app.listen(port, () => {
-  console.log(`  🏎️  🏎  🏎   Car Derby API is running on port ${port}!`);
+  console.log(getAsciiLogo());
+  console.log(`\nThe Car Derby API server is running on port ${port}!\n`);
 });
